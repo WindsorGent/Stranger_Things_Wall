@@ -3,10 +3,13 @@ from TwitterSearch import *
 import re
 import serial
 from time import sleep
-from credentials import *
+#If you have a seperate credentials file, uncomment the next line, otherwise you can just edit the secret tokens below.
+#from credentials import *
 
 regex = re.compile('[^a-zA-Z]')
+#Change this hashtag to what you want to search for
 sft = re.compile('#sparkfunthings')
+#change this to the port the Arduino is on
 myPort = serial.Serial('/dev/ttyUSB0', 115200, timeout = 10)
 myPort.write("Hello, world!")
 
@@ -21,22 +24,23 @@ while True:
 
 	    # it's about time to create a TwitterSearch object with our secret tokens
 		ts = TwitterSearch(
-			consumer_key = twitter_consumer_key,
-			consumer_secret = twitter_consumer_secret,
-			access_token = twitter_access_token,
-			access_token_secret = twitter_access_token_secret
+			consumer_key = 'twitter_consumer_key',
+			consumer_secret = 'twitter_consumer_secret',
+			access_token = 'twitter_access_token',
+			access_token_secret = 'twitter_access_token_secret'
 		     )
 
 	     # this is where the fun actually starts :)
 		for tweet in ts.search_tweets_iterable(tso):
 			if tweet['id'] not in tweet_id_list:
 				no_hashtag = sft.sub('',  tweet['text'])
-				text_only = regex.sub('', no_hashtag).encode('ascii', 'ignore')
+				text_only = regex.sub('', no_hashtag).encode('ascii', 'ignore')+'\r'
 				tweet_id_list.append(tweet['id'])
-				for character in text_only:
-					print character
-					myPort.write(character)
-					sleep(0.5)
+                #Prints the entire tweet
+				print text_only
+                #Send the entire tweet over the serial port, instead of letter by letter
+				myPort.write(text_only)
+				sleep(5)
 
 	except TwitterSearchException as e: # take care of all those ugly errors if there are some
 	    print(e)
