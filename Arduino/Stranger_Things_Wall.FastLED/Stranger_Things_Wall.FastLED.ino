@@ -76,7 +76,7 @@ void setup() {
   for (auto &color : colors) napplyGamma_video(color, 2.2);
   for (auto &i : index) i = random8(countof(colors));
   
-  FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, countof(leds));
+  FastLED.addLeds<WS2811, DATA_PIN, RGB>(leds, countof(leds));
   FastLED.setBrightness(140);
 
   Serial.begin(115200); //Listen to serial Port from Pi
