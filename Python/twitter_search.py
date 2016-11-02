@@ -12,15 +12,16 @@ regex = re.compile('[^a-zA-Z]')
 sft = re.compile('#sparkfunthings')
 #change this to the port the Arduino is on
 myPort = serial.Serial('/dev/ttyACM0', 115200, timeout = 10)
-myPort.write("Hello, world!")
+myPort.write("Hello, world!")+'\r'
 
 tweet_id_list = []
 #the messages to be displayed if no tweets are found. You can put as many as you want.
 random_messages = ['Random Message One','Random Message Two']
+#Declare the no message counter
 no_message = 0
 
 while True:
-    if no_message < 1 : #how many times you want to wait before displaying a stored message
+    if no_message < 1 : #how many minutes you want to wait before displaying a stored message
         try:
             print "Searching..."
             tso = TwitterSearchOrder() #Create a Twitter search object
@@ -45,20 +46,21 @@ while True:
                     print text_only
                     #Send entire tweet over serial port
                     myPort.write(text_only)
+                    no_message = 0
                     sleep(5)
 
         except TwitterSearchException as e: #Take care of errors
             print(e)
 
         no_message +=1
-        print "No message counter:" + no_message
+        print "No message counter: " + str(no_message)
 
     else:
         random_message = random.choice(random_messages)
         print random_message
         myPort.write(random_message)+'\r'
         no_message = 0
-        print "No message counter:" + no_message
+        print "No message counter: " + str(no_message)
     sleep(60)
 
 myPort.close()
